@@ -14,15 +14,12 @@ getAbi = async () => {
 const ALCHEMY_KEY = process.env.ALCHEMY_KEY
 const PRIVATE_KEY = process.env.PRIVATE_KEY
 
-
-
-
 seedChips = async () => {
     let provider = ethers.getDefaultProvider(`https://eth-goerli.g.alchemy.com/v2/${ALCHEMY_KEY}`)
     const abi = await getAbi()
 
-    const contractAddress = '0xd10820b5328364308Dd0Ec961c7A2a4E15938549'; // replace with your contract's address
-    const contractABI = abi; // replace with your contract's ABI
+    const contractAddress = '0xd10820b5328364308Dd0Ec961c7A2a4E15938549'; 
+    const contractABI = abi; 
     let signer = new ethers.Wallet(PRIVATE_KEY, provider)
     const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
