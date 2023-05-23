@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Smart Contract Interaction</title>
+</head>
+<body>
+  <h1>Seed Kong chips with token information</h1>
+
+  <button id="connect-button">Connect Wallet</button>
+  <button id="seed-button" disabled>Seed Chips</button>
+
+  <script src="https://cdn.ethers.io/lib/ethers-5.5.umd.min.js"></script>
+  <script>
+    const abiFilePath = './abi.json';
+    const chipDataFilePath = './chip-data.json';
+
+    let web3;
+    let signer;
+    let contract;
+
+    async function getAbi() {
+      const response = await fetch(abiFilePath);
+      const data = await response.json();
+      return data
+    }
+
+    async function getChipData() {
+      const response = await fetch(chipDataFilePath);
+      const chipData = await response.json();
+      
+      console.log('chipData:', chipData); // Log the chipData to see its value
+
+      const chipAddresses = [];
+      const tokenIds = [];
+
+      chipData.forEach((chip, i) => {
+        chipAddresses.push(chip.chip_address.S);
+        tokenIds.push(i + 1);
+      });
+
+      console.log('chipAddresses:', chipAddresses); // Log the chipAddresses to see its value
+      console.log('tokenIds:', tokenIds); // Log the tokenIds to see its value
+
+      return { chipAddresses, tokenIds };
+    }
+
+    async function seedChips() {
+      try {
+        const { chipAddresses, tokenIds } = await getChipData();
+
+        const throwIfTokenAlreadyMinted = true; // replace with true or false depending on your needs
+
+        // Retrieve contract address and ABI
+        const contractAddress = '0xd10820b5328364308Dd0Ec961c7A2a4E15938549';
+        const abi = await getAbi();
+
+        // Create a contract instance using the signer
+        contract = new ethers.Contract(contractAddress, abi, signer);
+
+        const tx = await contract.seedChipToTokenMapping(chipAddresses, tokenIds, throwIfTokenAlreadyMinted);
+        console.log(tx);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    async function connectWallet() {
+      if (window.ethereum) {
+        try {
+          // Request access to the user's MetaMask account
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
+          web3 = new ethers.providers.Web3Provider(window.ethereum);
+
+          // Enable the "Seed Chips" button
+          document.getElementById('seed-button').disabled = false;
+          console.log('Wallet connected!');
+
+          signer = web3.getSigner();
+        } catch (error) {
+          console.error(error);
+          alert('Failed to connect to wallet.');
+        }
+      } else {
+        alert('Please install MetaMask to connect your wallet.');
+      }
+    }
+
+    document.getElementById('connect-button').addEventListener('click', connectWallet);
+    document.getElementById('seed-button').addEventListener('click', seedChips);
+  </script>
+</body>
+</html>

@@ -2,6 +2,7 @@
   "dependencies": {
     "alchemy-sdk": "^2.8.1",
     "dotenv": "^16.0.3",
-    "ethers": "^6.3.0"
+    "ethers": "^6.3.0",
+    "pbt-chip-client": "^0.0.4"
   }
 }
